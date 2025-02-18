@@ -15,7 +15,7 @@ def welcome(): # intro message
     time.sleep(1.5)
     input("Press enter to start!")
 
-def start_menu():
+def start_menu(): # basic start CLI
     while True:
         os.system('cls')
         print("Welcome! Pick your selection: ")
@@ -31,7 +31,9 @@ def start_menu():
                     print("See you soon!")
                     time.sleep(1.5)
                     quit()
-        except:
+            else:
+                print("That selection value is not an option!")
+        except TypeError: # be careful, highly volatile
             print("That is not a valid option, please try again!")
             time.sleep(1.5)
             os.system('cls')

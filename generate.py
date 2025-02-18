@@ -13,8 +13,7 @@ def generate_small():
     for i in range(4):
         temp = random.randint(1,10)
         minesweep_matrix.pop((temp-1))
-        minesweep_matrix.insert((temp-1),"*")  
-    print(minesweep_matrix)
+        minesweep_matrix.insert((temp-1),"*")
 
 def sweeper_check(plot):
     if minesweep_matrix[(plot - 1)] == "o":
@@ -32,7 +31,6 @@ def field_update(plot,bomb):
 def EOR_check(): 
     if minesweep_matrix.count("o") == cover_field.count("o"):
         os.system('cls')
-        os.s
         print("You win! Congratulations!")
         time.sleep(4)
         quit()
