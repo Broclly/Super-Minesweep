@@ -7,7 +7,7 @@ import generate
 import os
 
 selection = 0
-build_ver = 1.0
+build_ver = "1.1 (indev)"
 
 def welcome(): # intro message
     print("~Hello! Welcome to Minesweeper!~")
@@ -15,7 +15,32 @@ def welcome(): # intro message
     time.sleep(1.5)
     input("Press enter to start!")
 
+def start_menu():
+    while True:
+        os.system('cls')
+        print("Welcome! Pick your selection: ")
+        print("1. Play!")
+        print("2. Quit.")
+        selection = int(input("Pick an operation (enter the digit before)"))
+        try:
+            if selection < 2 or selection > 0:
+                if selection == 1:
+                    gameplay()
+                    return 0
+                elif selection == 2:
+                    print("See you soon!")
+                    time.sleep(1.5)
+                    quit()
+        except:
+            print("That is not a valid option, please try again!")
+            time.sleep(1.5)
+            os.system('cls')
+
+        
+
 def gameplay(): # gameplay loop
+    generate.generate_small() # generates minefield
+
     while True:
         os.system('cls')
         UI_elements("n") 
@@ -44,5 +69,4 @@ def UI_elements(type): # basic hud
         print("===================\n")
 
 welcome()
-generate.generate_small()
-gameplay()
+start_menu()
