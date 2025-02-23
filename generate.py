@@ -43,7 +43,6 @@ def field_update(plot,bomb):
             cover_field.insert((plot),str(bomb))
 
 def EOR_check(): # Checks if you've won or lost
-    print(mine_count)
     if cover_field.count("x") == mine_count: 
         os.system('cls')
         UI_elements("sp")
