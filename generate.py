@@ -1,30 +1,36 @@
 #Originally Created on 2/12/2025
-## Created as an asset for Minesweeper
+## Created as an asset for Super-Minesweep
 ### DO NOT COPY THIS PROJECT WITHOUT CREDITS TO BROCLLY
 
 import random
 import time
 import os 
+import colorama
+import player
 
 minesweep_matrix = ["o","o","o","o","o","o","o","o","o","o",]
 cover_field = ["x","x","x","x","x","x","x","x","x","x"]
 mine_count = 0
+player_data = player.Player()
 
-def generate_small():
+def generate():
     for i in range(4):
         temp = random.randint(0,9)
         minesweep_matrix.pop((temp))
         minesweep_matrix.insert((temp),"*")
     global mine_count
     mine_count = minesweep_matrix.count("*")
-def sweeper_check(plot):
-    if minesweep_matrix[(plot)] == "*":
+def sweeper_check(plot,turn):
+    if minesweep_matrix[(plot)] == "*" and turn > 0:
         return "1A"
     else:
         temp = 0
         try:
             if minesweep_matrix[(plot + 1)] == "*":
                 temp += 1
+        except:
+            return temp
+        try:
             if minesweep_matrix[(plot - 1)] == "*":
                 temp += 1
             return temp
@@ -42,7 +48,11 @@ def field_update(plot,bomb):
         else:
             cover_field.insert((plot),str(bomb))
 
-def EOR_check(): # Checks if you've won or lost
+def EOR_check(turn): # Checks if you've won or lost
+    if cover_field.count("*") > 0 and turn > 0:
+        print("You landed on a " + colorama.Fore.RED +  "bomb" + colorama.Style.RESET_ALL + "!! You lose!")
+        time.sleep(4)
+        quit()
     if cover_field.count("x") == mine_count: 
         os.system('cls')
         UI_elements("sp")
@@ -58,11 +68,6 @@ def EOR_check(): # Checks if you've won or lost
                 quit()
             else:
                 print("Invalid answer!")  
-    
-    if cover_field.count("*") > 0:
-        print("You landed on a bomb!! You lose!")
-        time.sleep(4)
-        quit()
 
 def regenerate(): # runs task to restart game
     os.system('cls')
@@ -70,7 +75,7 @@ def regenerate(): # runs task to restart game
     global minesweep_matrix
     cover_field = ["x","x","x","x","x","x","x","x","x","x"]
     minesweep_matrix = ["o","o","o","o","o","o","o","o","o","o",]
-    generate_small()
+    generate()
 
 def UI_elements(type): # basic hud
     if type == "n": # displays current field
