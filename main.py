@@ -3,18 +3,18 @@
 ### DO NOT COPY THIS PROJECT WITHOUT CREDITS TO BROCLLY
 
 import time
-import generate
+import minefield
 import player
 import os
 import colorama
 
-player_data = player.Player()
+player_data = minefield.player_data
 selection = 0
-build_ver = "1.2"
+build_ver = "1.3 (indev)"
 
 
 def welcome(): # intro message
-    print("~Hello! Welcome to Minesweeper!~")
+    print("~Hello! Welcome to Super Minesweeper!~")
     print(f"Build ver: {build_ver}\n")
     time.sleep(1.5)
     input("Press enter to start!")
@@ -26,8 +26,8 @@ def start_menu(): # basic start CLI
         print("1. Play!")
         print("2. How to Play (RECOMMENDED FOR NEW PLAYERS)")
         print("3. Quit.")
-        selection = int(input("Pick an operation (enter the digit before)"))
         try:
+            selection = int(input("Pick an operation (enter the digit before)"))
             if selection < 3 or selection > 0:
                 if selection == 1:
                     break
@@ -44,10 +44,10 @@ def start_menu(): # basic start CLI
             print("That is not a valid option, please try again!")
             time.sleep(1.5)
             os.system('cls')
-    gameplay()
+    game_setup()
         
 def game_info(): # gives general info on how to play and special symbols
-    print("Minesweeper works in a way where you guess spots that are safe, in order to find every possible safe spot.")
+    print("Minesweeper works in a way where you guess spots that are safe, in order to find every possible safe spot.\n")
     print("This specfic version uses 10 plots, starting at 0, and ending at 9. If a bomb is next to the spot you guessed \nit will be represented by the number of bombs adjacent.")
     print("These are the basic rules of minesweeper!")
     print("However, this game uses special symbols, here are a list of them:")
@@ -65,24 +65,55 @@ def game_info(): # gives general info on how to play and special symbols
         os.system('cls')
         game_info()
 
+def game_setup(): # initalizes player values
+    os.system('cls')
+    print("Let's get started with the game setup for Super Minesweeper!")
+    time.sleep(1)
+    print("What is your name?")
+    player_data.name = str(input("Enter name here: "))
+    os.system('cls')
+    while True:
+        print("Pick a class: ")
+        print("1. Tank: Reduces damage taken from bombs (Difficulty: Beginner)")
+        print("2. Healer: Start at half health, and work your way up by sweeping mines (Difficulty: Advanced)")
+        print("3. Soldier: Start with an increased amount of health, and flip a coin to stay alive on lethal hits (Difficulty: Moderate1)")
+        try: 
+            class_select = int(input("Which class would you like to be? (#): "))
+        except:
+            print("That is not a number!")
+        else:
+            if class_select >= 1 and class_select <= 3: 
+                init_health, class_id, class_abilities  = player_data.attr_fetch(class_select) # fetches data about class
+                player_data.health =  init_health# initalizes health values
+                player_data.player_class = class_id # initalizes id
+                player_data.abilities.append(class_abilities) # adds abilities
+                break
+            else:
+                print("That is not a valid selection, try again!")
+    gameplay()
+    
 def gameplay(): # gameplay loop
-    generate.generate() # generates minefield
+    minefield.generate() # generates minefield
     while True:
         os.system('cls')
-        generate.UI_elements("n") 
+        minefield.UI_elements("n") 
         try: # error
             column_select = int(input("Select a column number (0 is top, higher is lower on the grid): "))
             row_select = int(input("Select a plot number (0-9): "))
             selection = column_select, row_select
-            status = generate.sweeper_check(*selection,player_data.turn)
-            generate.field_update(*selection,status)
+            status = minefield.sweeper_check(*selection,player_data.turn)
+            minefield.field_update(*selection,status)
             player_data.turn += 1
         except: # handling
             print("This is not a valid location! Please follow the instructions on the inputs!")
             time.sleep(3)
+            selection = None,None
         os.system('cls')
-        generate.UI_elements("n")
-        generate.EOR_check(player_data.turn)
+        minefield.UI_elements("n")
+        try:
+            minefield.EOR_check(player_data.turn,*selection)
+        except TypeError:
+            pass
         time.sleep(1)
 
 welcome()
