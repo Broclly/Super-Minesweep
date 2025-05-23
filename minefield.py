@@ -1,4 +1,4 @@
-#Originally Created on 2/12/2025
+# Originally Created on 2/12/2025
 ## Created as an asset for Super-Minesweep
 ### DO NOT COPY THIS PROJECT WITHOUT CREDITS TO BROCLLY
 
@@ -17,7 +17,7 @@ level = player_data.level
 total_x = 0
 
 
-def generate(): # geneerates a new field based on multiple parameters
+def generate(): # generates a new field based on multiple parameters
     global mine_count
     mine_count = 0
     for x in range(level + 1): # generates 1 row, plus 1 for every level completed
@@ -47,55 +47,55 @@ def type_generate(): # generates type of bomb per bomb generated
         return "ba"
 
 
-def sweeper_check(column_select,row_select,turn): # checks plot selected
-    if minesweep_matrix[column_select][row_select] == "*" and turn > 0: # returns if bomb stepped on
+def sweeper_check(row_select,column_select,turn): # checks plot selected
+    if minesweep_matrix[row_select][column_select] == "*" and turn > 0: # returns if bomb stepped on
         return "1A"
-    elif minesweep_matrix[column_select][row_select] == "*" and turn == 0: # returns if 1st turn immunity is applied
+    elif minesweep_matrix[row_select][column_select] == "*" and turn == 0: # returns if 1st turn immunity is applied
         return "1B"
     else: # checks every single possible area where a bomb could be in relation to plot selection
         temp = 0
         try:
-            if minesweep_matrix[column_select][(row_select + 1)]  == "*":
+            if minesweep_matrix[row_select][(column_select + 1)]  == "*":
                 temp += 1
         except:
             pass
         try:
-            if minesweep_matrix[column_select][(row_select - 1)]  == "*":
+            if minesweep_matrix[row_select][(column_select - 1)]  == "*":
                 temp += 1
         except:
             pass
         try:
-            if minesweep_matrix[(column_select + 1)][row_select] == "*":
+            if minesweep_matrix[(row_select + 1)][column_select] == "*":
                 temp += 1
         except:
             pass
         try:
-            if minesweep_matrix[(column_select - 1)][row_select] == "*":
+            if minesweep_matrix[(row_select - 1)][column_select] == "*":
                 temp += 1
         except:
             pass
         return temp
         
 
-def field_update(column_select,row_select,bomb):
-    cover_field[column_select].pop(row_select) # gets rid of selected slot
+def field_update(row_select,column_select,bomb):
+    cover_field[row_select].pop(column_select) # gets rid of selected slot
     if bomb == "1A": # replaces area with bomb
-        cover_field[column_select].insert((row_select),"*")
+        cover_field[row_select].insert((column_select),"*")
     elif bomb == "1B": # replaces area with 1st turn immunity
         global mine_count
-        cover_field[column_select].insert((row_select),"/")
+        cover_field[row_select].insert((column_select),"/")
         mine_count = mine_count - 1
     else:
         if bomb == 0: # replaces with integer
-            cover_field[column_select].insert((row_select),"0")
+            cover_field[row_select].insert((column_select),"0")
         else:
-            cover_field[column_select].insert((row_select),str(bomb))
+            cover_field[row_select].insert((column_select),str(bomb))
 
-def EOR_check(turn,column_select, row_select): # Checks if you've won or lost
+def EOR_check(turn,row_select, column_select): # checks status of player
     global total_x
     total_x = 0
-    if cover_field[column_select][row_select] == "*" and turn > 0: # checks if directly selected plot has a bomb
-        mine_type, dmg = bomb_type_check(type_field[column_select][row_select]) # checks type of bomb on plot
+    if cover_field[row_select][column_select] == "*" and turn > 0: # checks if directly selected plot has a bomb
+        mine_type, dmg = bomb_type_check(type_field[row_select][column_select]) # checks type of bomb on plot
         player_data.health = player_data.health - dmg # changes health to match damage
         player_data.EOR_ability_check(player_data, dmg) # checks current abilities, applies effects
         print(f"{player_data.name.upper()} landed on a " + colorama.Fore.RED + f"{mine_type.upper()}" + " bomb" + colorama.Style.RESET_ALL + f"! {player_data.name.upper()} has {player_data.health} health left!!") # front end stuffs
@@ -157,8 +157,9 @@ def UI_elements(type): # basic hud
         print("Current Minefield:") 
 
         for i in range((level + 1)):
-            print(cover_field[i])
-        print("===================\n")
+            print(cover_field[i], i)
+        print("  0    1    2    3    4    5    6    7    8    9  ")
+        print("===================")
 
     elif type == "sp": # displays final field
         print("===================") 
@@ -168,8 +169,9 @@ def UI_elements(type): # basic hud
         print("Current Minefield:") 
 
         for i in range((level + 1)):
-            print(minesweep_matrix[i]) 
-        print("===================\n")
+            print(minesweep_matrix[i], i)
+        print("  0    1    2    3    4    5    6    7    8    9  ")
+        print("===================")
 
     elif type =="debug": # displays debug field, used for testing
         print("===================") 
@@ -179,7 +181,9 @@ def UI_elements(type): # basic hud
         print("Current Minefield:") 
 
         for i in range((level + 1)):
-            print(cover_field[i]) 
+            print(cover_field[i], i) 
+        print("  0    1    2    3    4    5    6    7    8    9  ")
+
         print("Current Matrix:")
 
         for i in range((level + 1)):
@@ -188,4 +192,4 @@ def UI_elements(type): # basic hud
 
         for i in range((level + 1)):
             print(type_field[i])
-        print("===================\n")
+        print("===================")

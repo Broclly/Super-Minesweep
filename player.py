@@ -1,4 +1,4 @@
-#Originally Created on 2/25/2025
+# Originally Created on 2/25/2025
 ## Created as an asset for Super-Minesweep
 ### DO NOT COPY THIS PROJECT WITHOUT CREDITS TO BROCLLY
 
@@ -15,6 +15,7 @@ class Player():
         self.is_corrupted = False
         self.turn_immunities = 1
         self.abilities = []
+        self.talisman = None
     
     def attr_fetch(self,selected_class):
         index = 0

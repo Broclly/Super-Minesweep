@@ -1,4 +1,4 @@
-#Originally Created on 2/12/2025
+# Originally Created on 2/12/2025
 ## Created as Super-Minesweep
 ### DO NOT COPY THIS PROJECT WITHOUT CREDITS TO BROCLLY
 
@@ -10,12 +10,12 @@ import colorama
 
 player_data = minefield.player_data
 selection = 0
-build_ver = "1.3 (indev)"
+build_ver = "1.4 (indev)"
 
 
 def welcome(): # intro message
     print("~Hello! Welcome to Super Minesweeper!~")
-    print(f"Build ver: {build_ver}\n")
+    print(f"Build ver: {build_ver}\n") 
     time.sleep(1.5)
     input("Press enter to start!")
 
@@ -76,7 +76,7 @@ def game_setup(): # initalizes player values
         print("Pick a class: ")
         print("1. Tank: Reduces damage taken from bombs (Difficulty: Beginner)")
         print("2. Healer: Start at half health, and work your way up by sweeping mines (Difficulty: Advanced)")
-        print("3. Soldier: Start with an increased amount of health, and flip a coin to stay alive on lethal hits (Difficulty: Moderate1)")
+        print("3. Soldier: Start with an increased amount of health, and flip a coin to stay alive on lethal hits (Difficulty: Moderate)")
         try: 
             class_select = int(input("Which class would you like to be? (#): "))
         except:
@@ -98,9 +98,9 @@ def gameplay(): # gameplay loop
         os.system('cls')
         minefield.UI_elements("n") 
         try: # error
-            column_select = int(input("Select a column number (0 is top, higher is lower on the grid): "))
-            row_select = int(input("Select a plot number (0-9): "))
-            selection = column_select, row_select
+            row_select = int(input("Select a row number (0 is top, higher is lower on the grid): "))
+            column_select = int(input("Select a column number (0-9): "))
+            selection = row_select, column_select
             status = minefield.sweeper_check(*selection,player_data.turn)
             minefield.field_update(*selection,status)
             player_data.turn += 1
