@@ -4,9 +4,11 @@
 
 import random
 import time
-import os 
-import colorama
+import os
 import player
+import subprocess
+import sys
+import math
 
 minesweep_matrix = [[]]
 cover_field = [[]]
@@ -15,6 +17,40 @@ mine_count = 0
 player_data = player.Player() 
 level = player_data.level
 total_x = 0
+
+
+try: # checks if colorama is installed
+    import colorama
+except ImportError:
+    print("You do not own the 'Colorama' package, which is required to run this program.")
+    print("You can install this package via the pip command, or allow this script to install it for you.")
+    time.sleep(1/2)
+    auto_install = input("Would you like this script to auto install it for you? (respond with either y/n)")
+    if auto_install == "y":
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "colorama"])
+        os.system('cls')
+    else:
+        print("Please load up this script once colorama has been installed. Thank you! :)")
+        time.sleep(1.25)
+        quit()
+
+
+
+try: # checks if colorama is installed
+    import colorama
+except ImportError:
+    print("You do not own the 'Colorama' package, which is required to run this program.")
+    print("You can install this package via the pip command, or allow this script to install it for you.")
+    time.sleep(1/2)
+    auto_install = input("Would you like this script to auto install it for you? (respond with either y/n)")
+    if auto_install == "y":
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "colorama"])
+        os.system('cls')
+    else:
+        print("Please load up this script once colorama has been installed. Thank you! :)")
+        time.sleep(1.25)
+        quit()
+
 
 
 def generate(): # generates a new field based on multiple parameters
@@ -97,19 +133,19 @@ def EOR_check(turn,row_select, column_select): # checks status of player
     if cover_field[row_select][column_select] == "*" and turn > 0: # checks if directly selected plot has a bomb
         mine_type, dmg = bomb_type_check(type_field[row_select][column_select]) # checks type of bomb on plot
         player_data.health = player_data.health - dmg # changes health to match damage
+        player_data.points -= 10 # deduct points
         player_data.EOR_ability_check(player_data, dmg) # checks current abilities, applies effects
         print(f"{player_data.name.upper()} landed on a " + colorama.Fore.RED + f"{mine_type.upper()}" + " bomb" + colorama.Style.RESET_ALL + f"! {player_data.name.upper()} has {player_data.health} health left!!") # front end stuffs
+
+        if player_data.bomb_streak_max < player_data.bomb_streak: # bomb streak related stuff
+            player_data.bomb_streak_max = player_data.bomb_streak
         print("Sweep streak reset!")
-        player_data.bomb_streak = 0 # resets sweep streak
+        player_data.bomb_streak = 0 
+
         time.sleep(2)
     else:
         player_data.bomb_streak += 1
         player_data.EOR_ability_check(player_data, 0)
-
-    if player_data.health <= 0:
-        print(f"{player_data.name.upper()} died! Game over!")
-        time.sleep(4)
-        quit()
 
     for x in range(level + 1): # find the total amount of x's left on any turn
         total_x += cover_field[x].count("x")
@@ -118,18 +154,9 @@ def EOR_check(turn,row_select, column_select): # checks status of player
         os.system('cls')
         UI_elements("sp")
         print(f"{player_data.name.upper()} win! Congratulations!")
-        while True:
-            cont = input("Play again? (y/n)")
-            if cont == "y":
-                regenerate()
-                break
-            elif cont == "n":
-                print("See you later!")
-                time.sleep(4)
-                quit()
-            else:
-                print("Invalid answer!")  
-
+        input("Press any key to continue to the next level...")
+        player_data.points += math.floor((1.79^player_data.level) + 125)
+        
 def bomb_type_check(bomb): # returns useful information in exchange for bomb prefix
     if bomb == "cr":
         return "corrupted", 50
@@ -154,8 +181,9 @@ def UI_elements(type): # basic hud
         print(f"Mines: {mine_count}")
         print("Level: " + str(level))
         print(f"Health: {str(player_data.health)}")
-        print("Current Minefield:") 
-
+        print("Current Minefield:")
+        print("  0    1    2    3    4    5    6    7    8    9")
+        
         for i in range((level + 1)):
             print(cover_field[i], i)
         print("  0    1    2    3    4    5    6    7    8    9  ")
@@ -166,7 +194,8 @@ def UI_elements(type): # basic hud
         print(f"Mines: {mine_count}")
         print("Level: " + str(level))
         print(f"Health: {str(player_data.health)}")
-        print("Current Minefield:") 
+        print("Current Minefield:")
+        print("  0    1    2    3    4    5    6    7    8    9")
 
         for i in range((level + 1)):
             print(minesweep_matrix[i], i)
@@ -178,8 +207,9 @@ def UI_elements(type): # basic hud
         print(f"Mines: {mine_count}")
         print("Level: " + str(level))
         print(f"Health: {str(player_data.health)}")
-        print("Current Minefield:") 
-
+        print("Current Minefield:")         
+        print("  0    1    2    3    4    5    6    7    8    9")
+        
         for i in range((level + 1)):
             print(cover_field[i], i) 
         print("  0    1    2    3    4    5    6    7    8    9  ")
