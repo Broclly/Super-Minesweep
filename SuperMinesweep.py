@@ -3,8 +3,7 @@
 ### DO NOT COPY THIS PROJECT WITHOUT CREDITS TO BROCLLY
 
 import time
-import minefield
-import player
+from assets import minefield, player
 import os
 
 player_data = minefield.player_data
@@ -116,7 +115,8 @@ def gameplay(): # gameplay loop
     gameover()
 
 def gameover(): # gameover screen
-    print(f"{player_data.name} has died! Game over!")
+    os.system('cls')
+    print(f"{player_data.name.upper()} has died! Game over!")
     print("=================")
     print("Statistics:")
     print(f"Level Reached: {player_data.level}")

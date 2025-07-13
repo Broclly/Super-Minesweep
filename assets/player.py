@@ -10,6 +10,8 @@ class Player():
         self.level = 1
         self.turn = 0
         self.points = 0
+        self.coins = 0
+        self.talisman = None
         self.bomb_streak = 0
         self.bomb_streak_max = 0
         self.health = 100
@@ -18,7 +20,6 @@ class Player():
         self.is_corrupted = False
         self.turn_immunities = 1
         self.abilities = []
-        self.talisman = None
     
     def attr_fetch(self,selected_class):
         index = 0

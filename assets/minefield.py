@@ -5,7 +5,7 @@
 import random
 import time
 import os
-import player
+import assets.player as player
 import subprocess
 import sys
 import math
@@ -153,9 +153,16 @@ def EOR_check(turn,row_select, column_select): # checks status of player
     if total_x == mine_count: # checks if amount of x's left matches total amount of mines 
         os.system('cls')
         UI_elements("sp")
-        print(f"{player_data.name.upper()} win! Congratulations!")
+        print(f"{player_data.name.upper()} win! Congratulations kill yourself!")
+        player_data.points += math.floor((1.79 ** player_data.level) + 125)
+        print(player_data.points)
         input("Press any key to continue to the next level...")
-        player_data.points += math.floor((1.79^player_data.level) + 125)
+        time.sleep(2)
+        if (player_data.level + 1) % 5 == 0:
+            pass
+        else:
+            regenerate()
+
         
 def bomb_type_check(bomb): # returns useful information in exchange for bomb prefix
     if bomb == "cr":
@@ -182,11 +189,10 @@ def UI_elements(type): # basic hud
         print("Level: " + str(level))
         print(f"Health: {str(player_data.health)}")
         print("Current Minefield:")
-        print("  0    1    2    3    4    5    6    7    8    9")
-        
+
         for i in range((level + 1)):
             print(cover_field[i], i)
-        print("  0    1    2    3    4    5    6    7    8    9  ")
+        print("  0    1    2    3    4    5    6    7    8    9")
         print("===================")
 
     elif type == "sp": # displays final field
@@ -195,7 +201,6 @@ def UI_elements(type): # basic hud
         print("Level: " + str(level))
         print(f"Health: {str(player_data.health)}")
         print("Current Minefield:")
-        print("  0    1    2    3    4    5    6    7    8    9")
 
         for i in range((level + 1)):
             print(minesweep_matrix[i], i)
@@ -208,7 +213,6 @@ def UI_elements(type): # basic hud
         print("Level: " + str(level))
         print(f"Health: {str(player_data.health)}")
         print("Current Minefield:")         
-        print("  0    1    2    3    4    5    6    7    8    9")
         
         for i in range((level + 1)):
             print(cover_field[i], i) 
