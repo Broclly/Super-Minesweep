@@ -103,6 +103,7 @@ def game_setup(): # initalizes player values
                 print("That is not a valid selection, try again!")
                 time.sleep(0.75)
                 os.system('cls')
+            player_data.points = 0
             gameplay()
 
 def gameplay(): # gameplay loop
