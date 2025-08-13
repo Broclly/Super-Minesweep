@@ -198,6 +198,7 @@ def UI_elements(type): # basic hud
         print(f"Mines: {mine_count}")
         print("Level: " + str(player_data.level))
         print(f"Health: {str(player_data.health)}")
+        print(f"Points Multi: {player_data.points_multi}")
         print("Current Minefield:")
 
         for i in range((player_data.level + 1)):
@@ -210,6 +211,7 @@ def UI_elements(type): # basic hud
         print(f"Mines: {mine_count}")
         print("Level: " + str(player_data.level))
         print(f"Health: {str(player_data.health)}")
+        print(f"Points Multi: {player_data.points_multi}")
         print("Current Minefield:")
 
         for i in range((player_data.level + 1)):
@@ -222,6 +224,7 @@ def UI_elements(type): # basic hud
         print(f"Mines: {mine_count}")
         print("Level: " + str(player_data.level))
         print(f"Health: {str(player_data.health)}")
+        print(f"Points Multi: {player_data.points_multi}")
         print("Current Minefield:")         
         
         for i in range((player_data.level + 1)):
