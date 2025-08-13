@@ -5,10 +5,12 @@
 import time
 from assets import minefield, player
 import os
+import math
 
 player_data = minefield.player_data
 selection = 0
 build_ver = "1.4 (indev)"
+
 def welcome(): # intro message
     print("~Hello! Welcome to Super Minesweeper!~")
     print(f"Build ver: {build_ver}\n")
@@ -43,13 +45,27 @@ def start_menu(): # basic start CLI
     game_setup()
         
 def game_info(): # gives general info on how to play and special symbols
-    print("Minesweeper works in a way where you guess spots that are safe, in order to find every possible safe spot.\n")
-    print("This specfic version uses 10 plots, starting at 0, and ending at 9. If a bomb is next to the spot you guessed \nit will be represented by the number of bombs adjacent.")
-    print("These are the basic rules of minesweeper!")
-    print("However, this game uses special symbols, here are a list of them:")
+    print("===========")
+    print("BASIC RULES:")
+    print("===========")
+    print("Minesweeper works in a way where you guess spots that are safe, in order to find every possible safe spot.")
+    print("This specfic version uses 10 plots per row, starting at 0, and ending at 9. If a bomb is next to the spot you guessed \nit will be represented by the number of bombs adjacent.")
+    print("These are the basic rules of minesweeper!\n")
+    print("===========")
+    print("SPECIAL SYMBOLS:")
+    print("===========")
+    print("In order to represent a minefield in a terminal, some different types of symbols (often found on your keyboard) are used.")
+    print("Here are a list of them:")
     print("'*' = Bomb")
     print("(any integer) = Bombs adjacent to space")
     print("'/' = Would've been a bomb, but 1st turn immunity prevented it.")
+    print("'+' = Flagged plot\n")
+    print("===========")
+    print("TALISMANS & ITEMS")
+    print("===========")
+    print("During certain waves, a shop will appear with various items. Buying these items will require 'coins' which can be obtain \nvia finishing waves, with higher waves rewarding more coins.")
+    print("These talismans will give you powers, but be warned, only one can be equipped at a time, so buying another will replace \nyour current talisman!")
+    print("As well, consumable power ups can be found in the shop too! Their effects vary per item, but can be used anytime during the main game!\n")
     time.sleep(3)
     temp = input("\n\nReady to be sent back to the main menu? (y/n)")
     if temp == "y":
@@ -78,49 +94,76 @@ def game_setup(): # initalizes player values
         except:
             print("That is not a number!")
         else:
-            if class_select >= 1 and class_select <= 4: 
-                init_health, class_id, class_abilities  = player_data.attr_fetch(class_select) # fetches data about class
+            try: 
+                init_health, class_id, class_abilities = player_data.attr_fetch(class_select) # fetches data about class
                 player_data.health =  init_health# initalizes health values
                 player_data.player_class = class_id # initalizes id
                 player_data.abilities.append(class_abilities) # adds abilities
-                break
-            else:
+            except TypeError:
                 print("That is not a valid selection, try again!")
-    gameplay()
-    
+                time.sleep(0.75)
+                os.system('cls')
+            gameplay()
+
 def gameplay(): # gameplay loop
     minefield.generate() # generates minefield
     while player_data.health > 0:
         os.system('cls')
-        minefield.UI_elements("n") 
-        try: # error
-            row_select = int(input("Select a row number (0 is top, higher is lower on the grid): "))
-            column_select = int(input("Select a column number (0-9): "))
-            selection = row_select, column_select
-            status = minefield.sweeper_check(*selection,player_data.turn)
-            minefield.field_update(*selection,status)
-            player_data.turn += 1
-        except: # handling
-            print("This is not a valid location! Please follow the instructions on the inputs!")
+        minefield.UI_elements("debug") 
+        print("1. Sweep plot")
+        print("2. Flag plot")
+        print("3. Open inventory")
+        print(f"{player_data.points_multi}")
+        try: # err
+            action = int(input("Select an action (enter #): "))
+            if action != 3:
+                row_select = int(input("Select a row number (0 is top, higher is lower on the grid): "))
+                column_select = int(input("Select a column number (0-9): "))
+                selection = row_select, column_select
+                if action == 1:
+                    status = minefield.sweeper_check(*selection,player_data.turn)
+                else:
+                    status = "F"
+                minefield.field_update(*selection,status)
+                player_data.turn += 1
+            elif action == 3:
+                if len(player_data.inventory) > 0:
+                    os.system('cls')
+                    iterator = 0
+                    for i in player_data.inventory:
+                        print(f"Item #{iterator + 1}: {player_data.inventory[iterator][0]}")
+                        iterator += 1
+                    action = int(input("Select an item to use (#): "))
+                    player_data.item_use(action - 1)
+                else:
+                    print("You dont have any items in your inventory! Buy some from the shop levels.")
+                    time.sleep(2)
+            else:
+                print("That is not a valid action!")
+                time.sleep(1.5)
+                selection = None,None
+        except Exception as err: # handling
+            print(f"An error occured during processing! {err}")
             time.sleep(1.5)
             selection = None,None
         os.system('cls')
-        minefield.UI_elements("n")
+        minefield.UI_elements("debug")
         try:
             minefield.EOR_check(player_data.turn,*selection)
         except TypeError:
             pass
-        time.sleep(1)
-    player_data.points += (50*player_data.bomb_streak_max) / 2
+    player_data.points += math.floor(((50*player_data.bomb_streak_max) / 2) * player_data.points_multi)
     gameover()
 
 def gameover(): # gameover screen
+
     os.system('cls')
     print(f"{player_data.name.upper()} has died! Game over!")
     print("=================")
     print("Statistics:")
     print(f"Level Reached: {player_data.level}")
     print(f"Points Obtained: {player_data.points}")
+    print(f"Coin Balance: {player_data.coins}")
     print(f"Highest Bomb Streak: {player_data.bomb_streak_max}")
     print("=================")
     input("\nPress any key to continue...")

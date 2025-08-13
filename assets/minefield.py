@@ -9,13 +9,13 @@ import assets.player as player
 import subprocess
 import sys
 import math
+import assets.shop as shop
 
 minesweep_matrix = [[]]
 cover_field = [[]]
 type_field = [[]]
 mine_count = 0
-player_data = player.Player() 
-level = player_data.level
+player_data = player.Player()
 total_x = 0
 
 
@@ -34,29 +34,10 @@ except ImportError:
         time.sleep(1.25)
         quit()
 
-
-
-try: # checks if colorama is installed
-    import colorama
-except ImportError:
-    print("You do not own the 'Colorama' package, which is required to run this program.")
-    print("You can install this package via the pip command, or allow this script to install it for you.")
-    time.sleep(1/2)
-    auto_install = input("Would you like this script to auto install it for you? (respond with either y/n)")
-    if auto_install == "y":
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "colorama"])
-        os.system('cls')
-    else:
-        print("Please load up this script once colorama has been installed. Thank you! :)")
-        time.sleep(1.25)
-        quit()
-
-
-
 def generate(): # generates a new field based on multiple parameters
     global mine_count
     mine_count = 0
-    for x in range(level + 1): # generates 1 row, plus 1 for every level completed
+    for x in range(player_data.level + 1): # generates 1 row, plus 1 for every level completed
         minesweep_matrix.insert(x,["o","o","o","o","o","o","o","o","o","o"])
         cover_field.insert(x,["x","x","x","x","x","x","x","x","x","x"])
         type_field.insert(x,["n","n","n","n","n","n","n","n","n","n"])
@@ -69,12 +50,12 @@ def generate(): # generates a new field based on multiple parameters
             minesweep_matrix[x].pop(plot_replace)
             minesweep_matrix[x].insert(plot_replace,"*")
 
-    for x in range(level  + 1): # counts bombs that are in every single row
+    for x in range(player_data.level  + 1): # counts bombs that are in every single row
         mine_count = mine_count + minesweep_matrix[x].count("*")
 
 def type_generate(): # generates type of bomb per bomb generated
     try:
-        roll = random.randint(0, int((9*level)/((level^level)*1.8)))
+        roll = random.randint(0, int((9*player_data.level)/((player_data.level^player_data.level)*1.8)))
         if roll >= 10:
             return "cr"
         else:
@@ -82,11 +63,10 @@ def type_generate(): # generates type of bomb per bomb generated
     except ZeroDivisionError:
         return "ba"
 
-
 def sweeper_check(row_select,column_select,turn): # checks plot selected
     if minesweep_matrix[row_select][column_select] == "*" and turn > 0: # returns if bomb stepped on
         return "1A"
-    elif minesweep_matrix[row_select][column_select] == "*" and turn == 0: # returns if 1st turn immunity is applied
+    elif minesweep_matrix[row_select][column_select] == "*" and player_data.turn_immunities > 0: # returns if turn immunity is applied
         return "1B"
     else: # checks every single possible area where a bomb could be in relation to plot selection
         temp = 0
@@ -111,21 +91,43 @@ def sweeper_check(row_select,column_select,turn): # checks plot selected
         except:
             pass
         return temp
-        
 
-def field_update(row_select,column_select,bomb):
-    cover_field[row_select].pop(column_select) # gets rid of selected slot
+def field_update(row_select,column_select,bomb): # updates field graphic
+    if bomb != "F":
+        cover_field[row_select].pop(column_select) # gets rid of selected slot
     if bomb == "1A": # replaces area with bomb
         cover_field[row_select].insert((column_select),"*")
     elif bomb == "1B": # replaces area with 1st turn immunity
         global mine_count
         cover_field[row_select].insert((column_select),"/")
         mine_count = mine_count - 1
+        player_data.turn_immunities -= 1
+    elif bomb == "F": # points to the flag manager
+        field_flag(row_select,column_select)
     else:
         if bomb == 0: # replaces with integer
             cover_field[row_select].insert((column_select),"0")
         else:
             cover_field[row_select].insert((column_select),str(bomb))
+
+def field_flag(row_select,column_select): # toggles a flag on a specified plot
+    if cover_field[row_select][column_select] == "+": # checks if flag exists on the plot
+        print("\nWarning!")
+        print("This plot already has a flag on it! Toggling this will remove the flag!")
+        action = input("Continue? (y/n)")
+        if action == "y":
+            cover_field[row_select].pop(column_select)
+            cover_field[row_select].insert((column_select),"x")
+            print("Flag removed!")
+            time.sleep(0.8)
+        else:
+            return
+    elif cover_field[row_select][column_select] != "+" and cover_field[row_select][column_select] != "x": # checks if a plots value is already known
+        print("This has a non-flagable symbol on it. Please only flag on plots with a 'x' on it!")
+        time.sleep(1.5)
+    elif cover_field[row_select][column_select]: # adds flag if all other requirements are met
+        cover_field[row_select].pop(column_select)
+        cover_field[row_select].insert((column_select),"+")
 
 def EOR_check(turn,row_select, column_select): # checks status of player
     global total_x
@@ -147,19 +149,26 @@ def EOR_check(turn,row_select, column_select): # checks status of player
         player_data.bomb_streak += 1
         player_data.EOR_ability_check(player_data, 0)
 
-    for x in range(level + 1): # find the total amount of x's left on any turn
+    for x in range(player_data.level + 1): # find the total amount of x's left on any turn
         total_x += cover_field[x].count("x")
 
-    if total_x == mine_count: # checks if amount of x's left matches total amount of mines 
+    if total_x == mine_count or player_data.player_class == "D2": # checks if amount of x's left matches total amount of mines 
         os.system('cls')
         UI_elements("sp")
-        print(f"{player_data.name.upper()} win! Congratulations kill yourself!")
-        player_data.points += math.floor((1.79 ** player_data.level) + 125)
-        print(player_data.points)
+        print(f"{player_data.name.upper()} win! Congratulations!")
+        player_data.points += math.floor((((1.79 ** player_data.level) + 125) * player_data.points_multi))
+        player_data.coins += math.floor(((((1.3*player_data.level) ** 1/2) * 10) / (3 ** 1/player_data.level)) + 50 + player_data.coins_bonus) 
+        if player_data.talisman == "Gilded Gaunlet":
+            player_data.coins += math.floor(5 * (1/2 * player_data.level))
         input("Press any key to continue to the next level...")
         time.sleep(2)
-        if (player_data.level + 1) % 5 == 0:
-            pass
+        if (player_data.level + 1) % 2 == 0 and player_data.talisman == "Timehold Amulet":
+            player_data.health += 15
+        if (player_data.level + 1) % 3 == 0:
+            shop.randomize_shop(player_data)
+            shop.shop(player_data)
+            player_data.level += 1
+            regenerate()
         else:
             regenerate()
 
@@ -174,23 +183,24 @@ def regenerate(): # runs task to restart game
     os.system('cls')
     global cover_field
     global minesweep_matrix
-    global level
-    global turn
-    cover_field = [["x","x","x","x","x","x","x","x","x","x"] * level]  # resets cover field
+    cover_field = [["x","x","x","x","x","x","x","x","x","x"] * player_data.level]  # resets cover field
     minesweep_matrix = [[]] # resets minesweep matrix when restarting
-    level += 1
+    player_data.level += 1
     player_data.turn = 0
+    player_data.turn_immunities = 1
+    if player_data.talisman == "Phaser Bracelet":
+        player_data.turn_immunities = 2
     generate() 
 
 def UI_elements(type): # basic hud
     if type == "n": # displays current field
         print("===================") 
         print(f"Mines: {mine_count}")
-        print("Level: " + str(level))
+        print("Level: " + str(player_data.level))
         print(f"Health: {str(player_data.health)}")
         print("Current Minefield:")
 
-        for i in range((level + 1)):
+        for i in range((player_data.level + 1)):
             print(cover_field[i], i)
         print("  0    1    2    3    4    5    6    7    8    9")
         print("===================")
@@ -198,11 +208,11 @@ def UI_elements(type): # basic hud
     elif type == "sp": # displays final field
         print("===================") 
         print(f"Mines: {mine_count}")
-        print("Level: " + str(level))
+        print("Level: " + str(player_data.level))
         print(f"Health: {str(player_data.health)}")
         print("Current Minefield:")
 
-        for i in range((level + 1)):
+        for i in range((player_data.level + 1)):
             print(minesweep_matrix[i], i)
         print("  0    1    2    3    4    5    6    7    8    9  ")
         print("===================")
@@ -210,20 +220,20 @@ def UI_elements(type): # basic hud
     elif type =="debug": # displays debug field, used for testing
         print("===================") 
         print(f"Mines: {mine_count}")
-        print("Level: " + str(level))
+        print("Level: " + str(player_data.level))
         print(f"Health: {str(player_data.health)}")
         print("Current Minefield:")         
         
-        for i in range((level + 1)):
+        for i in range((player_data.level + 1)):
             print(cover_field[i], i) 
         print("  0    1    2    3    4    5    6    7    8    9  ")
 
         print("Current Matrix:")
 
-        for i in range((level + 1)):
+        for i in range((player_data.level + 1)):
             print(minesweep_matrix[i])
         print("Current Type Field:")
 
-        for i in range((level + 1)):
+        for i in range((player_data.level + 1)):
             print(type_field[i])
         print("===================")
