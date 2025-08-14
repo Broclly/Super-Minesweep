@@ -71,22 +71,22 @@ def sweeper_check(row_select,column_select,turn): # checks plot selected
     else: # checks every single possible area where a bomb could be in relation to plot selection
         temp = 0
         try:
-            if minesweep_matrix[row_select][(column_select + 1)]  == "*":
+            if minesweep_matrix[row_select][(column_select + 1)]  == "*" and column_select != 9:
                 temp += 1
         except:
             pass
         try:
-            if minesweep_matrix[row_select][(column_select - 1)]  == "*":
+            if minesweep_matrix[row_select][(column_select - 1)]  == "*" and column_select != 0:
                 temp += 1
         except:
             pass
         try:
-            if minesweep_matrix[(row_select + 1)][column_select] == "*":
+            if minesweep_matrix[(row_select + 1)][column_select] == "*" and row_select != 0:
                 temp += 1
         except:
             pass
         try:
-            if minesweep_matrix[(row_select - 1)][column_select] == "*":
+            if minesweep_matrix[(row_select - 1)][column_select] == "*" and row_select != player_data.level:
                 temp += 1
         except:
             pass
@@ -101,7 +101,6 @@ def field_update(row_select,column_select,bomb): # updates field graphic
         global mine_count
         cover_field[row_select].insert((column_select),"/")
         mine_count = mine_count - 1
-        player_data.turn_immunities -= 1
     elif bomb == "F": # points to the flag manager
         field_flag(row_select,column_select)
     else:
@@ -132,7 +131,7 @@ def field_flag(row_select,column_select): # toggles a flag on a specified plot
 def EOR_check(turn,row_select, column_select): # checks status of player
     global total_x
     total_x = 0
-    if cover_field[row_select][column_select] == "*" and turn > 0: # checks if directly selected plot has a bomb
+    if cover_field[row_select][column_select] == "*" and player_data.turn_immunities <= 0: # checks if directly selected plot has a bomb
         mine_type, dmg = bomb_type_check(type_field[row_select][column_select]) # checks type of bomb on plot
         player_data.health = player_data.health - dmg # changes health to match damage
         player_data.points -= 10 # deduct points
@@ -148,6 +147,7 @@ def EOR_check(turn,row_select, column_select): # checks status of player
     else:
         player_data.bomb_streak += 1
         player_data.EOR_ability_check(player_data, 0)
+        player_data.turn_immunities -= 1
 
     for x in range(player_data.level + 1): # find the total amount of x's left on any turn
         total_x += cover_field[x].count("x")
@@ -188,9 +188,10 @@ def regenerate(): # runs task to restart game
     player_data.level += 1
     player_data.turn = 0
     player_data.turn_immunities = 1
-    if player_data.talisman == "Phaser Bracelet":
-        player_data.turn_immunities = 2
-    generate() 
+    generate()
+    if player_data.talisman == "Phaser Braclet":
+        player_data.turn_immunities = 1
+
 
 def UI_elements(type): # basic hud
     if type == "n": # displays current field

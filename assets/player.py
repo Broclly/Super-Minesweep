@@ -13,7 +13,7 @@ class Player():
         self.points_multi = 1.0
         self.coins = 0
         self.coins_bonus = 0
-        self.talisman = None
+        self.talisman = "Phaser Braclet"
         self.bomb_streak = 0
         self.bomb_streak_max = 0
         self.health = 100
@@ -29,6 +29,23 @@ class Player():
             index += 1
             if index == selected_class:
                 return player_classes[(index - 1)]["health"], player_classes[(index - 1)]["id"], player_classes[(index - 1)]["abilities"]
+    
+    def player_reset(self): # back to the default settings 
+        self.level = 1
+        self.turn = 0
+        self.points = 0
+        self.points_multi = 1.0
+        self.coins = 0
+        self.coins_bonus = 0
+        self.talisman = "Phaser Braclet"
+        self.bomb_streak = 0
+        self.bomb_streak_max = 0
+        self.health = 100
+        self.name = "ERROR"
+        self.player_class = "ERROR"
+        self.turn_immunities = 1
+        self.abilities = []
+        self.inventory = []
             
     def item_use(self, item): # manages the use of items
         item_id = self.inventory[item][1]

@@ -110,7 +110,7 @@ def gameplay(): # gameplay loop
     minefield.generate() # generates minefield
     while player_data.health > 0:
         os.system('cls')
-        minefield.UI_elements("n") 
+        minefield.UI_elements("debug") 
         print("1. Sweep plot")
         print("2. Flag plot")
         print("3. Open inventory")
@@ -147,7 +147,7 @@ def gameplay(): # gameplay loop
             time.sleep(1.5)
             selection = None,None
         os.system('cls')
-        minefield.UI_elements("n")
+        minefield.UI_elements("debug")
         try:
             minefield.EOR_check(player_data.turn,*selection)
         except TypeError:
@@ -169,6 +169,7 @@ def gameover(): # gameover screen
     input("\nPress any key to continue...")
     print("Thanks for playing! You will now be sent back to the main menu!")
     time.sleep(1)
+    player_data.player_reset()
     start_menu()
 
 welcome()
