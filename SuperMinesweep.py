@@ -10,6 +10,7 @@ import math
 player_data = minefield.player_data
 selection = 0
 build_ver = "1.4"
+ui_type = "n"
 
 def welcome(): # intro message
     print("~Hello! Welcome to Super Minesweeper!~")
@@ -110,7 +111,7 @@ def gameplay(): # gameplay loop
     minefield.generate() # generates minefield
     while player_data.health > 0:
         os.system('cls')
-        minefield.UI_elements("debug") 
+        minefield.UI_elements(ui_type) 
         print("1. Sweep plot")
         print("2. Flag plot")
         print("3. Open inventory")
@@ -147,7 +148,7 @@ def gameplay(): # gameplay loop
             time.sleep(1.5)
             selection = None,None
         os.system('cls')
-        minefield.UI_elements("debug")
+        minefield.UI_elements(ui_type)
         try:
             minefield.EOR_check(player_data.turn,*selection)
         except TypeError:
