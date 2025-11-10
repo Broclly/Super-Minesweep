@@ -21,13 +21,18 @@ class Screen():
         self.first_render = True
         
     def main_menu(self,frame):
+        # each object requires the following structure: object, collision flag, clicked flag
+        # draw all objects first, then add default values to the first render
+        # afterwards do any events that change certain colors
+        frame.fill([0,0,0])
+
+        
+        play_box = pygame.draw.rect(frame, [255,255,255], [300, 200, 150, 50])
+
         if self.first_render == True:
             self.screen_objects = []
             self.first_render = False
-
-        frame.fill([0,0,0])
-        play_box = pygame.draw.rect(frame, [255,255,255], [300, 200, 150, 50])
-        self.screen_objects.append([play_box, False, False])
+            self.screen_objects.append([play_box, False, False])
 
         title_text = large_font.render("Welcome to Super Minesweeper!",False,[255,255,255])
         if self.screen_objects[0][2] == True:
