@@ -9,8 +9,8 @@ import math
 
 player_data = minefield.player_data
 selection = 0
-build_ver = "1.4"
-ui_type = "n"
+build_ver = "1.5 "
+ui_type = "debug"
 
 def welcome(): # intro message
     print("~Hello! Welcome to Super Minesweeper!~")

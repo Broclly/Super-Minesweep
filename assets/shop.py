@@ -48,7 +48,7 @@ def randomize_shop(data): # randomizes the shop based off of current player data
     random_id = random.randint(0,4)
     shop_items[0] = talismans[random_id]
     for i in range(1,3):
-        random_id = random.randint(0,1)
+        random_id = random.randint(0,(len(upgrades) - 1))
         shop_items[i] = upgrades[random_id]
     return
 
@@ -100,12 +100,15 @@ TimeAmu = Item("Timehold Amulet","A silver pocketwatch, with the sands of time f
 PhasBrac = Item("Phaser Braclet", "A specialized bracelet, given to elite members of the Quantum Fighting Corps. Allows for one more turn of immunity per round.", 100, "T4", -1)
 GildGaunt = Item("Gilded Gauntlet", "Speckled with gold, these gauntlets bend the will of the world to grant you monetary favor. Grants bonus coins at round end, scales with leveling.", 80, "T5", -1)
 
-# Perma-upgrades
+# Consumables
 
 LifeInfu = Item("Lifeforce Infusion", "An injectable vial of purplish liquid, enhancing the user's vital systems. Increases user's hp by +10 (stacks).", 25, "U1", 1)
 PartyTix = Item("Party Ticket", "A uniquely vibrant ticket, covered in glitter. Adds a .1x modifier to point scoring (stacks).", 25, "U2", 1)
 MidasInj = Item("Midas Injection", "Beautiful gold liquid shimmers through it's vial, coating the heart harmlessly in gold. Adds a +10 bonus to gold earned at round end. (stacks)", 25, "U3", 1)
+QntmCola = Item("Quantum Cola", "A dazzling drink that seems to shift colors depending on the way you view it. Bombs heal instead of damaging.", 100, "U4",1)
+KybrBrry = Item("Kyber Berry", "An extremely unstable berry that's affected by temporal instability. Grants 3 KYBER energy, but if damage is taken on the next turn, death.") 
+
 
 
 talismans = [RevAmu,RetRing,TimeAmu,PhasBrac,GildGaunt]
-upgrades = [LifeInfu,PartyTix,MidasInj]
+upgrades = [LifeInfu,PartyTix,MidasInj,QntmCola]

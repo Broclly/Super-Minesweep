@@ -56,6 +56,13 @@ class Player():
             self.points_multi += .1
         elif item_id == "U3":
             self.coins_bonus += 10
+        elif item_id == "U4":
+            temp = 0
+            for x in self.abilities:
+                if x == "Quantum Infliction":
+                    self.abilities.pop(temp)
+                temp += 1
+            self.abilities.append("Quantum Infliction")
         self.inventory.pop(item)
 
     def EOR_ability_check(self, player, damage): # checks abilities at the end of the game
@@ -65,7 +72,7 @@ class Player():
                 self.points_multi += 1.0
         elif self.talisman == "Revival Amulet":
             if self.health <= 0 and self.bomb_streak >= 5:
-                print("The Revival Amulet glow golden, pulsating life back into your body!")
+                print("The Revival Amulet glows golden, pulsating life back into your body!")
                 self.health += damage
         for i in player.abilities:
             if i == "DMG REDUCT":

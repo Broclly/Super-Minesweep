@@ -71,7 +71,7 @@ def sweeper_check(row_select,column_select,turn): # checks plot selected
     else: # checks every single possible area where a bomb could be in relation to plot selection
         temp = 0
         try:
-            if minesweep_matrix[row_select][(column_select + 1)]  == "*" and column_select != 9:
+            if minesweep_matrix[row_select][(column_select + 1)]  == "*" and column_select != 9 and (column_select) < (column_select - 1):
                 temp += 1
         except:
             pass
@@ -81,12 +81,22 @@ def sweeper_check(row_select,column_select,turn): # checks plot selected
         except:
             pass
         try:
-            if minesweep_matrix[(row_select + 1)][column_select] == "*" and row_select != 0:
+            if minesweep_matrix[(row_select + 1)][column_select] == "*" and row_select != 0: 
                 temp += 1
         except:
             pass
         try:
             if minesweep_matrix[(row_select - 1)][column_select] == "*" and row_select != player_data.level:
+                temp += 1
+        except:
+            pass
+        try:
+            if minesweep_matrix[(row_select - 1)][(column_select - 1)] == "*" and row_select != player_data.level:
+                temp += 1
+        except:
+            pass
+        try:
+            if minesweep_matrix[(row_select + 1)][(column_select + 1)] == "*" and row_select != player_data.level:
                 temp += 1
         except:
             pass
@@ -133,16 +143,20 @@ def EOR_check(turn,row_select, column_select): # checks status of player
     total_x = 0
     if cover_field[row_select][column_select] == "*" and player_data.turn_immunities <= 0: # checks if directly selected plot has a bomb
         mine_type, dmg = bomb_type_check(type_field[row_select][column_select]) # checks type of bomb on plot
-        player_data.health = player_data.health - dmg # changes health to match damage
-        player_data.points -= 10 # deduct points
-        player_data.EOR_ability_check(player_data, dmg) # checks current abilities, applies effects
-        print(f"{player_data.name.upper()} landed on a " + colorama.Fore.RED + f"{mine_type.upper()}" + " bomb" + colorama.Style.RESET_ALL + f"! {player_data.name.upper()} has {player_data.health} health left!!") # front end stuffs
+        for x in player_data.abilities: # checks any abilities that might block damage
+            if x == "Quantum Infliction":
+                player_data.health = player_data.health + 10 # heals if quantum infliction is active
+                print(colorama.Fore.CYAN + "QUANTUM!" + colorama.Fore.RESET + f"{player_data.name.upper}" + colorama.Fore.GREEN + "HEALED" + colorama.Fore.RESET + f"from a {mine_type.upper()} bomb!" + f"{player_data.name.upper()} has {player_data.health} health left!!")
+            else:
+                player_data.health = player_data.health - dmg # changes health to match damage
+                player_data.points -= 10 # deduct points
+                player_data.EOR_ability_check(player_data, dmg) # checks current abilities, applies effects
+                print(f"{player_data.name.upper()} landed on a " + colorama.Fore.RED + f"{mine_type.upper()}" + " bomb" + colorama.Style.RESET_ALL + f"! {player_data.name.upper()} has {player_data.health} health left!!") # front end stuffs
 
-        if player_data.bomb_streak_max < player_data.bomb_streak: # bomb streak related stuff
-            player_data.bomb_streak_max = player_data.bomb_streak
-        print("Sweep streak reset!")
-        player_data.bomb_streak = 0 
-
+                if player_data.bomb_streak_max < player_data.bomb_streak: # bomb streak related stuff
+                    player_data.bomb_streak_max = player_data.bomb_streak
+                    print("Sweep streak reset!")
+                    player_data.bomb_streak = 0 
         time.sleep(2)
     else:
         player_data.bomb_streak += 1
@@ -188,9 +202,14 @@ def regenerate(): # runs task to restart game
     player_data.level += 1
     player_data.turn = 0
     player_data.turn_immunities = 1
+    ability_search = 0
     generate()
     if player_data.talisman == "Phaser Braclet":
         player_data.turn_immunities = 1
+    for x in player_data.abilities:
+        if x == "Quantum Infliction":
+            player_data.abilities.pop(ability_search)
+        ability_search += 0
 
 
 def UI_elements(type): # basic hud
